@@ -1,4 +1,3 @@
-
 .*.swp
 *.*~*
 *.bak
@@ -10,6 +9,5 @@
 Makefile
 build
 *.bin
-
+old
 .DS_Store
-

@@ -20,29 +20,40 @@ else (WIN32)
 	endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif(WIN32)
 
+## Libs ##
+
+#FIND_LIBRARY( OPENCL_LIBRARY NAMES OpenCL PATH
+#  $ENV{OPENCL_LIB_DIR} 
+#  $ENV{HOME}/.local/lib
+#  /usr/lib
+#  /usr/lib64
+#  /usr/local/lib
+#  /usr/local/cuda/lib64
+#  /usr/local/cuda/lib 
+#)
 
 ## Global config ##
 
 configure_file(
-    "${PROJECT_SOURCE_DIR}/CMakeConf.h.in"
-    "${PROJECT_BINARY_DIR}/CMakeConf.h"
+	"${PROJECT_SOURCE_DIR}/CMakeConf.h.in"
+	"${PROJECT_BINARY_DIR}/CMakeConf.h"
 )
 
 ## Source files ##
 
 set(SOURCES
-    App.cpp
-    AppOpenCL.cpp
-    Config.cpp
+	App.cpp
+	AppOpenCL.cpp
+	Config.cpp
 	CPUAlgos_global.cpp
 	CPUAlgos_mtrlt.cpp
 	CPUAlgos_hp7.cpp
-    CPUMiner.cpp
-    Curl.cpp
-    main.cpp
-    ServerSettings.cpp
-    SHA256.cpp
-    Util.cpp
+	CPUMiner.cpp
+	Curl.cpp
+	main.cpp
+	ServerSettings.cpp
+	SHA256.cpp
+	Util.cpp
 	Sieve.cpp
 	Primes.cpp
 	CSieveOfEratosthenes.cpp
@@ -74,6 +85,8 @@ include_directories(
 
 include_directories(
 	"/usr/include/libblkmaker-0.1"
+	"/usr/local/include/libblkmaker-0.1"
+	"/usr/local/include"
 	"${PROJECT_SOURCE_DIR}/libblkmaker"
 )
 
@@ -81,13 +94,14 @@ link_directories(
 	"/usr/lib"
 	"/lib"
 	"/c/mingw/lib"
+	"/usr/local/lib"
 )
 
 set_target_properties(reaper PROPERTIES COMPILE_FLAGS -O2)
 
 ## OpenCL detection ##
 if(NOT CPU_MINING_ONLY)
-    
+	
 	if (WIN32)
 		message("setting up for win32 build")
 		find_library(OPENCL_LIBRARY libOpenCL PATHS "$ENV{AMDAPPSDKROOT}/lib/x86")
@@ -97,25 +111,25 @@ if(NOT CPU_MINING_ONLY)
 		else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 			find_library(OPENCL_LIBRARY NAMES OpenCL PATHS "$ENV{AMDAPPSDKROOT}/lib/x86")
 		endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    endif(WIN32)
+	endif(WIN32)
 	
-    if(APPLE)
-        find_path(OPENCL_INCLUDE_DIR OpenCL/cl.h PATHS "$ENV{AMDAPPSDKROOT}/include")
-    else(APPLE)
-        find_path(OPENCL_INCLUDE_DIR CL/cl.h PATHS "$ENV{AMDAPPSDKROOT}/include")
-    endif(APPLE)
-    
-    mark_as_advanced(OPENCL_INCLUDE_DIR OPENCL_LIBRARY)
-    
-    include_directories(${OPENCL_INCLUDE_DIR})
-    
+	if(APPLE)
+		find_path(OPENCL_INCLUDE_DIR OpenCL/cl.h PATHS "$ENV{AMDAPPSDKROOT}/include")
+	else(APPLE)
+		find_path(OPENCL_INCLUDE_DIR CL/cl.h PATHS "$ENV{AMDAPPSDKROOT}/include")
+	endif(APPLE)
+	
+	mark_as_advanced(OPENCL_INCLUDE_DIR OPENCL_LIBRARY)
+	
+	include_directories(${OPENCL_INCLUDE_DIR})
+	
 endif(NOT CPU_MINING_ONLY)
 
 # Dependencies
 message("asking for OpenCL = " ${OPENCL_LIBRARY})
 
 if(CPU_MINING_ONLY)
-    target_link_libraries(reaper gmp blkmaker-0.1 blkmaker_jansson-0.1 jansson pthread curl)
+	target_link_libraries(reaper gmp blkmaker-0.1 blkmaker_jansson-0.1 jansson pthread curl)
 else(CPU_MINING_ONLY)
-    target_link_libraries(reaper gmp blkmaker-0.1 blkmaker_jansson-0.1 jansson pthread curl ${OPENCL_LIBRARY})
+	target_link_libraries(reaper gmp blkmaker-0.1 blkmaker_jansson-0.1 jansson pthread curl ${OPENCL_LIBRARY})
 endif(CPU_MINING_ONLY)
