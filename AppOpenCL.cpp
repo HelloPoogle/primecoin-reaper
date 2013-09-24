@@ -282,7 +282,14 @@ void OpenCL::WriteBufferPattern(uint device_num, string buffername, size_t data_
 	_clState& GPUstate = GPUstates[device_num];
 	if (GPUstate.buffers[buffername] == NULL)
 		cout << "Buffer " << buffername << " not found on GPU #" << device_num << endl;
+#ifdef CL_VERSION_1_2
 	cl_int status = clEnqueueFillBuffer(GPUstate.commandQueue, GPUstate.buffers[buffername], pattern, pattern_length, 0, data_length, 0, NULL, NULL);
+#else
+	uint8_t buffer[data_length];
+	for(uint16_t i=0; i<(data_length / pattern_length);i++)
+		memcpy((&buffer[i*pattern_length]), pattern, pattern_length);
+	cl_int status = clEnqueueWriteBuffer(GPUstate.commandQueue, GPUstate.buffers[buffername], CL_TRUE, 0, data_length, buffer, 0, NULL, NULL);
+#endif
 	if (globalconfs.coin.config.GetValue<bool>("opencldebug"))
 		cout << "Write buffer pattern " << buffername << ", " << pattern_length << " bytes. Status: " << status << endl;
 }
