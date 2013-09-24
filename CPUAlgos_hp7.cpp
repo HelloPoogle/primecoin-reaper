@@ -637,7 +637,7 @@ bool MineProbablePrimeChain(Reap_CPU_param* state, Work& tempwork, CSieveOfErato
         nStart = ticker()*1000;
 		psieve.InitAndWeave(state, nSieveSize, nBits, mpzHash, mpzFixedMultiplier);
         if (globalconfs.coin.config.GetValue<bool>("debug"))
-            printf("MineProbablePrimeChain() : new sieve (%u/%u) ready in %uus\n", psieve.CandidateList.size(), nSieveSize, (unsigned int) (ticker()*1000 - nStart));
+            printf("MineProbablePrimeChain() : new sieve (%lu/%u) ready in %uus\n", psieve.CandidateList.size(), nSieveSize, (unsigned int) (ticker()*1000 - nStart));
     }
 
     mpz_class mpzHashMultiplier = mpzHash * mpzFixedMultiplier;
